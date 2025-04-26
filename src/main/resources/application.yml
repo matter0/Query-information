@@ -1,0 +1,13 @@
+spring:
+ application:
+  name: viewInformation
+
+server:
+  port: 2299
+
+  mvc:
+   hiddenmethod:
+    filter:
+     enabled: true
+
+
