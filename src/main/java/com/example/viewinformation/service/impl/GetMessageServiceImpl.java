@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class GetMessageServiceImpl implements GetMessageService {
-    public static List<LocalDateTime> alreadyExit=new ArrayList<>();
+    private static List<LocalDateTime> alreadyExit=new CopyOnWriteArrayList<>();
     private static final Pattern CHINESE_PATTERN = Pattern.compile("^[\\u4e00-\\u9fa5]+$");
     //定义内部类，用于辅助实现根据创建时间排序功能
     public static class ExcelRow {
@@ -62,7 +62,7 @@ public class GetMessageServiceImpl implements GetMessageService {
     private static final Set<String> TESTER_NAMES = new HashSet<>(Arrays.asList(
             "jcz", "lsq", "hzh", "jww", "ws", "贺子涵",
             "历业", "wx", "梁世奇", "mac17", "test",
-            "关媛媛", "张育力", "金成哲", "测试"
+            "关媛元", "张育力", "金成哲", "测试"
     ));
     /**
      * 判断给定字符串是否包含集合中的任意一个名字
@@ -518,7 +518,6 @@ public class GetMessageServiceImpl implements GetMessageService {
     }
     /**
      *   获取excel文件所需信息
-     *
      * @param
      * @return
     */
@@ -747,7 +746,6 @@ public class GetMessageServiceImpl implements GetMessageService {
         );
         return mergedData;
     }
-
     /**
      *   前端导出Excel文件
      * @param
@@ -759,12 +757,13 @@ public class GetMessageServiceImpl implements GetMessageService {
 
     }
     /**
-     *   定时发送邮件
+     * 定时发送邮件
      * @param
      * @return
     */
-    @Scheduled(cron = "0 0 9 * * ?")
+    @Scheduled(cron = "0 46 17 * * ?")
     public void sendMail(){
+        List<String> emails=ExcelUtils.loadEmails();
         try {
             // ...生成 excelBytes 的逻辑
             List<List<?>> data = getExcelInfo();
@@ -772,11 +771,10 @@ public class GetMessageServiceImpl implements GetMessageService {
             byte[] excelBytes = ExcelUtils.exportFileMergedObjectsOnEmail(
                     "导出示例", data
             );
-
             ExcelUtils.sendExcelByEmail(
                     excelBytes,
                     "患者信息",
-                    "663857576@qq.com",
+                    emails,
                     "患者健康记录导出",
                     "您好，附件是导出的患者健康信息 Excel 表，请查收"
             );

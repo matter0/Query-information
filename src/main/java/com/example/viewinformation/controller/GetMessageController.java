@@ -6,6 +6,7 @@ import com.example.viewinformation.pojo.TimeLine;
 import com.example.viewinformation.result.PageResult;
 import com.example.viewinformation.result.Result;
 import com.example.viewinformation.service.GetMessageService;
+import com.example.viewinformation.utils.ExcelUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -82,9 +86,41 @@ public class GetMessageController {
      * @return
     */
     @GetMapping("/api/download-excel")
-    public Result downloadExcel(HttpServletResponse response) {
+    public void downloadExcel(HttpServletResponse response) {
        getMessageService.exportExcelOnline(response);
-       return Result.success();
+    }
+    /**
+     *   向json文件中添加邮箱数据
+     * @param
+     * @return
+    */
+    @PostMapping("/api/addEmailInfo/{email}")
+    public Result saveEmail(@PathVariable String email){
+        ExcelUtils.saveEmails(email);
+        log.info("添加邮箱账号：{}",email);
+        return Result.success("添加账号成功");
+    }
+    /**
+     *   查看json文件中的邮箱数据
+     * @param
+     * @return
+    */
+    @PostMapping("/api/selectEmailInfo")
+    public Result selectEmail(){
+        List<String> list=ExcelUtils.loadEmails();
+        log.info("查看邮箱账号数据：{}",list);
+        return Result.success(list);
+    }
+    /**
+     *   删除指定邮箱数据
+     * @param
+     * @return
+    */
+    @PostMapping("/api/deleteEmailInfo/{email}")
+    public Result delete(@PathVariable String email){
+        ExcelUtils.deleteEmail(email);
+        log.info("删除邮箱账号：{}",email);
+        return Result.success("删除账号成功");
     }
 }
 
