@@ -763,7 +763,6 @@ public class GetMessageServiceImpl implements GetMessageService {
      * @param
      * @return
     */
-
     @Scheduled(cron = "0 0 9 * * ?")
     public void sendMail(){
         try {
@@ -777,7 +776,7 @@ public class GetMessageServiceImpl implements GetMessageService {
             ExcelUtils.sendExcelByEmail(
                     excelBytes,
                     "患者信息",
-                    "3123496296@qq.com",
+                    "663857576@qq.com",
                     "患者健康记录导出",
                     "您好，附件是导出的患者健康信息 Excel 表，请查收"
             );
