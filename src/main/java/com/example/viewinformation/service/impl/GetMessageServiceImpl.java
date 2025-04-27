@@ -556,8 +556,6 @@ public class GetMessageServiceImpl implements GetMessageService {
                         SendMessageVo dto = buildDtoFor(hr, sp);
                         if (dto != null) {
                             //Excel文件填充
-                            log.info("开始尽行数据填充");
-
 
                             //Doctor数据填充
 

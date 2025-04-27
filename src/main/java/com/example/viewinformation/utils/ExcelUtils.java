@@ -2,7 +2,6 @@ package com.example.viewinformation.utils;
 
 
 import java.util.Properties;
-
 import com.example.viewinformation.exception.BaseException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.activation.DataHandler;
@@ -11,45 +10,29 @@ import jakarta.mail.*;
 import jakarta.mail.internet.*;
 import jakarta.mail.util.ByteArrayDataSource;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
-
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
-
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-
 import javax.imageio.ImageIO;
-
 import jakarta.servlet.http.HttpServletResponse; // ✅
-
 import java.awt.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+
 /**
  * Excel导入导出工具类
  *
@@ -118,6 +101,7 @@ public class ExcelUtils {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            throw new BaseException("添加邮箱失败：" + e.getMessage());
         } finally {
             lock.writeLock().unlock(); // 解锁
         }
@@ -767,8 +751,11 @@ public static void sendExcelByEmail(
         // 默认调用toString()
         return value.toString();
     }
-
-
+    /**
+     *   解析kv映射
+     * @param
+     * @return
+    */
     private static Map<String, String> parseKvMapping(String kv) {
         Map<String, String> map = new HashMap<>();
         String[] pairs = kv.split(";");
@@ -780,6 +767,11 @@ public static void sendExcelByEmail(
         }
         return map;
     }
+    /**
+     *   图片相关
+     * @param
+     * @return
+    */
     public static byte[] downloadImage(String imageUrl) throws IOException {
         URL url = new URL(imageUrl);
         BufferedImage image = ImageIO.read(url);
@@ -790,7 +782,4 @@ public static void sendExcelByEmail(
         ImageIO.write(image, "jpg", baos); // 重新编码为标准 JPEG
         return baos.toByteArray();
     }
-
-
-
 }
