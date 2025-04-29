@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.io.File;
 import java.io.IOException;
@@ -43,11 +44,22 @@ import java.util.ArrayList;
 @Slf4j
 public class ExcelUtils {
 
-    private static final String FILE_PATH = "./config/emails.json"; // 你的json文件路径
+    private static final String FILE_PATH = "/app/config/emails.json"; // 线上测试
+//    private static final String FILE_PATH = "./config/emails.json"; // 本地测试
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 
+    // 编译成 Pattern，避免每次都重新编译
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(EMAIL_REGEX);
     // 加一个全局读写锁
     private static final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    // 检查是否是邮箱
+    public static boolean isValidEmail(String email) {
+        if (email == null) {
+            return false;
+        }
+        return EMAIL_PATTERN.matcher(email).matches();
+    }
     /**
      *   读json中的文件
      * @param
@@ -61,7 +73,10 @@ public class ExcelUtils {
                 return new ArrayList<>();
             }
             EmailList emailList = mapper.readValue(file, EmailList.class);
-            return emailList.getEmails();
+            List<String> emails = emailList.getEmails();
+            Collections.reverse(emails);
+            return emails;
+
         } catch (IOException e) {
             e.printStackTrace();
             return new ArrayList<>();
@@ -75,6 +90,9 @@ public class ExcelUtils {
      * @return
     */
     public static void saveEmails(String email) {
+        if (!isValidEmail(email)){
+            throw new BaseException("无效的邮箱地址："+email);
+        }
         lock.writeLock().lock(); // 加写锁
         try {
             // 先读取已有数据
@@ -474,7 +492,7 @@ public static byte[] exportFileMergedObjectsOnEmail(
         String fileName,
         List<List<?>> dataLists
 ) {
-    SXSSFWorkbook workbook = new SXSSFWorkbook();
+    XSSFWorkbook workbook = new XSSFWorkbook();
     Sheet sheet = workbook.createSheet(fileName);
     Drawing<?> drawing = sheet.createDrawingPatriarch();
     int currentRow = 0;
@@ -624,7 +642,6 @@ public static byte[] exportFileMergedObjectsOnEmail(
         throw new RuntimeException("导出失败：" + e.getMessage(), e);
     } finally {
         try {
-            workbook.dispose();
             workbook.close();
         } catch (IOException ignored) {}
     }
@@ -687,8 +704,6 @@ public static void sendExcelByEmail(
     // 发送邮件
     Transport.send(message);
 }
-
-
     //多图插入解决
     private static BufferedImage mergeImagesVertically(List<BufferedImage> images) {
         if (images == null || images.isEmpty()) {
@@ -714,8 +729,6 @@ public static void sendExcelByEmail(
         g.dispose();
         return combined;
     }
-
-
     /**
      * 统一格式化字段值的方法
      */

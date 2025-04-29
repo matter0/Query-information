@@ -61,8 +61,6 @@ public class GetMessageController {
         HealthRecordDto healthRecordsList=getMessageService.fetchHealthRecords(patientId);
         return Result.success(healthRecordsList);
     }
-
-
     /**
      *   通过病人id查询时间轴信息
      * @param
@@ -77,7 +75,6 @@ public class GetMessageController {
         Map<String, TimeLine> map=getMessageService.fetchTimeLine(patientId);
         return Result.success(map);
     }
-
     /**
      *   前端导出下载excel
      * @param

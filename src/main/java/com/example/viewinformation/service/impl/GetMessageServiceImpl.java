@@ -81,10 +81,10 @@ public class GetMessageServiceImpl implements GetMessageService {
         return false; // 遍历完都没有找到匹配项，返回 false
     }
     // 配置为外部属性
-//    private static final String[] SERVICES = {"172.18.0.12:2308", "172.18.0.12:2316", "172.18.0.12:2324",
-//            "172.18.0.12:2332", "172.18.0.12:2340", "172.18.0.12:2348", "172.18.0.12:2356", "172.18.0.13:2364", "172.18.0.14:2372","172.18.0.14:2380","172.18.0.14:2388"};
-    private static final String[] SERVICES = {"10.88.0.4:2308", "10.88.0.4:2316", "10.88.0.4:2324",
-                    "10.88.0.4:2332", "10.88.0.4:2340", "10.88.0.4:2348", "10.88.0.4:2356", "10.88.0.4:2364", "10.88.0.4:2372","10.88.0.4:2380","10.88.0.4:2388"};
+    private static final String[] SERVICES = {"172.18.0.12:2308", "172.18.0.12:2316", "172.18.0.12:2324",
+            "172.18.0.12:2332", "172.18.0.12:2340", "172.18.0.12:2348", "172.18.0.12:2356", "172.18.0.13:2364", "172.18.0.14:2372","172.18.0.14:2380","172.18.0.14:2388"};
+//    private static final String[] SERVICES = {"10.88.0.4:2308", "10.88.0.4:2316", "10.88.0.4:2324",
+//                    "10.88.0.4:2332", "10.88.0.4:2340", "10.88.0.4:2348", "10.88.0.4:2356", "10.88.0.4:2364", "10.88.0.4:2372","10.88.0.4:2380","10.88.0.4:2388"};
     /**
      *   全局查询
      * @param
@@ -752,14 +752,13 @@ public class GetMessageServiceImpl implements GetMessageService {
     public void exportExcelOnline(HttpServletResponse response){
         List<List<?>> data=getExcelInfo();
         ExcelUtils.exportExcelToResponse(response, "数据导出", data);
-
     }
     /**
      * 定时发送邮件
      * @param
      * @return
     */
-    @Scheduled(cron = "0 46 17 * * ?")
+    @Scheduled(cron = "0 0 9 * * ?")
     public void sendMail(){
         List<String> emails=ExcelUtils.loadEmails();
         try {
